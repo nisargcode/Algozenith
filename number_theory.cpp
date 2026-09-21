@@ -1,40 +1,75 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-long long mod = 1e9 + 7;
-#define MAXN 1000100
-long long fact[MAXN + 1];
-long long invfact[MAXN + 1];
+#define MAXN 1000000
 
-long long binpow(long long a , long long b){
-    if(b == 0) return 1;
-    if(b % 2 == 0){
-        long long temp = binpow(a , b / 2);
-        return temp * temp % mod;
+// O(sqrt(n))
+vector<long long>getdivisors(long long n){
+    vector<long long> v;
+    for(int i=1 ; i*i <= n ; i++){
+        if(n % i == 0){
+            v.push_back(i);
+            if(n/i != i)
+                v.push_back(n / i);
+        }
     }
-    return a * binpow(a , b - 1) % mod;
+    return v;
 }
 
-long long inv(long long x){
-    return binpow(x , mod - 2);
-}
-
-long long nCr(long long n , long long r){
-    if(r < 0 || r > n) return 0;
-    return fact[n] * invfact[n-r] % mod * invfact[r] % mod;
-}
-
-void precompute(){
-    fact[0] = 1;
-    for(int i=1 ; i<=MAXN ; i++){
-        fact[i] = fact[i-1] * i % mod;
+// O(nlog(log n))
+vector<bool>getallprimes(){
+    vector<bool> isprime(MAXN + 1);
+    for (int i = 2; i<=MAXN ; i++)
+        isprime[i] = 1;
+    for (int i = 2; i <= MAXN; i++){
+        if(isprime[i]){
+            for (int j = 2*i; j <= MAXN; j+=i){
+                isprime[j] = 0;
+            }
+        }
     }
-    invfact[MAXN] = inv(fact[MAXN]);
-    for(int i=MAXN ; i>=1 ; i--){
-        invfact[i-1] = invfact[i] * i % mod;
+    return isprime;
+}
+
+// prime factorization -
+vector<long long> spf(MAXN + 1);
+// spf -> smallest prime factor
+void pre(){
+    for (int i = 2; i <= MAXN; i++){
+        spf[i] = i;
+    }
+    for (int i = 2; i <= MAXN; i++){
+        if(spf[i] == i){
+            for (int j = 2 * i; j <= MAXN; j+=i){
+                if(spf[j] == j)
+                    spf[j] = i;
+            }
+        }
     }
 }
+vector<long long> getspf(long long num){
+    vector<long long> v;
+    while(num > 1){
+        v.push_back(spf[num]);
+        num = num / spf[num];
+    }
+    return v;
+}
+
 int main(){
-    precompute();
-    cout << nCr(5, 2) << endl;
+    pre();
+
+    long long n = 60;
+
+    vector<long long> v = getdivisors(n);
+
+    for(auto x : v)
+        cout << x << " ";
+
+    cout << '\n';
+
+    vector<long long> factors = getspf(n);
+
+    for(auto x : factors)
+        cout << x << " ";
 }
