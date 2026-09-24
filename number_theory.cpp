@@ -56,6 +56,23 @@ vector<long long> getspf(long long num){
     return v;
 }
 
+// get unique prime factors
+// for example if 12 then it gives only {2 , 3} not {2 , 2 , 3}
+vector<int> getpf(int n){
+    vector<int> v;
+
+    while(n > 1){
+        int p = spf[n];
+        v.push_back(p);
+
+        while(n % p == 0){
+            n /= p;
+        }
+    }
+
+    return v;
+}
+
 int main(){
     pre();
 
